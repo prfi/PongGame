@@ -47,6 +47,12 @@ class Board:
 		self.width = width
 		self.height = height
 
+	def is_next_to_left_wall(self, ball):
+		return ball.next_x == 0
+
+	def is_next_to_right_wall(self, ball):
+		return ball.next_x == (self.width - 1)
+
 	def is_left_wall_collision(self, ball):
 		return ball.next_x < 0
 
@@ -54,15 +60,15 @@ class Board:
 		return ball.next_x > (self.width - 1)
 
 	def is_top_wall_collision(self, ball):
-		return ball.next_y < 0
+		return ball.next_y < 1
 
 	def is_bottom_wall_collision(self, ball):
-		return ball.next_y > (self.height - 1)
+		return ball.next_y > (self.height - 2)
 
 	@property
 	def center_x(self):
 		return int(self.width / 2)
-		
+
 
 class Paddle:
 
@@ -74,7 +80,7 @@ class Paddle:
 	def is_collision(self, ball):
 		if ball.next_y != self.y:
 			return False
-	
+
 		if self.width == 0:
 			return False
 
@@ -96,11 +102,11 @@ class PongGame:
 		self.board = Board(width, height)
 
 		self.ball = Ball(self.board.center_x, 1)
-		
+
 		self.top_paddle = Paddle(0, 0, width=2)
 		self.bottom_paddle = Paddle(0, (self.board.height - 1), width=2)
 
-		self.game_started = False	
+		self.game_started = False
 
 	def process(self):
 		if not self.game_started:
@@ -136,10 +142,10 @@ class PongGame:
 			return
 
 		if random_dir_x:
-			if self.board.is_right_wall_collision(ball):
+			if self.board.is_next_to_right_wall(ball):
 				ball.set_direction(random.choice([-1, 0]), None)
 
-			elif self.board.is_left_wall_collision(ball):
+			elif self.board.is_next_to_left_wall(ball):
 				ball.set_direction(random.choice([0, 1]), None)
 
 			else:
@@ -207,7 +213,7 @@ if __name__ == "__main__":
 
 	while True:
 		for event in pygame.event.get(2):
-			
+
 			if event.key == pygame.K_q:
 				pong.top_paddle_move(-1)
 
